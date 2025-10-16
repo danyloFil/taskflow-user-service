@@ -1,4 +1,4 @@
-package com.projetomaven.aprendendo_spring.infrastructure.security;
+package com.taskflow.user.infrastructure.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,50 +12,50 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// Define a classe JwtRequestFilter, que estende OncePerRequestFilter
+// Defines the JwtRequestFilter class, which extends OncePerRequestFilter
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    // Define propriedades para armazenar instâncias de JwtUtil e UserDetailsService
+    // Properties to hold instances of JwtUtil and UserDetailsService
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
-    // Construtor que inicializa as propriedades com instâncias fornecidas
+    // Constructor that initializes properties with provided instances
     public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
-    // Método chamado uma vez por requisição para processar o filtro
+    // Method called once per request to process the filter
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        // Obtém o valor do header "Authorization" da requisição
+        // Gets the value of the "Authorization" header from the request
         final String authorizationHeader = request.getHeader("Authorization");
 
-        // Verifica se o cabeçalho existe e começa com "Bearer "
+        // Checks if the header exists and starts with "Bearer "
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            // Extrai o token JWT do cabeçalho
+            // Extracts the JWT token from the header
             final String token = authorizationHeader.substring(7);
-            // Extrai o nome de usuário do token JWT
+            // Extracts the username from the JWT token
             final String username = jwtUtil.extractUsername(token);
 
-            // Se o nome de usuário não for nulo e o usuário não estiver autenticado ainda
+            // If the username is not null and the user is not yet authenticated
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Carrega os detalhes do usuário a partir do nome de usuário
+                // Loads user details from the username
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                // Valida o token JWT
+                // Validates the JWT token
                 if (jwtUtil.validateToken(token, username)) {
-                    // Cria um objeto de autenticação com as informações do usuário
+                    // Creates an authentication object with the user's details
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
-                    // Define a autenticação no contexto de segurança
+                    // Sets authentication in the security context
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
         }
 
-        // Continua a cadeia de filtros, permitindo que a requisição prossiga
+        // Continues the filter chain, allowing the request to proceed
         chain.doFilter(request, response);
     }
 }
