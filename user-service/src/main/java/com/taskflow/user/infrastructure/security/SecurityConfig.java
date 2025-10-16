@@ -1,4 +1,4 @@
-package com.projetomaven.aprendendo_spring.infrastructure.security;
+package com.taskflow.user.infrastructure.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,51 +20,51 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Instâncias de JwtUtil e UserDetailsService injetadas pelo Spring
+    // Instances of JwtUtil and UserDetailsService injected by Spring
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
-    // Construtor para injeção de dependências de JwtUtil e UserDetailsService
+    // Constructor for dependency injection of JwtUtil and UserDetailsService
     @Autowired
     public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
-    // Configuração do filtro de segurança
+    // Security filter configuration
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Cria uma instância do JwtRequestFilter com JwtUtil e UserDetailsService
+        // Creates an instance of JwtRequestFilter with JwtUtil and UserDetailsService
         JwtRequestFilter jwtRequestFilter = new JwtRequestFilter(jwtUtil, userDetailsService);
 
         http
-                .csrf(AbstractHttpConfigurer::disable) // Desativa proteção CSRF para APIs REST (não aplicável a APIs que não mantêm estado)
+                .csrf(AbstractHttpConfigurer::disable) // Disables CSRF protection for REST APIs (not applicable to stateless APIs)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/usuario/login").permitAll() // Permite acesso ao endpoint de login sem autenticação
-                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()// Permite acesso ao endpoint GET /auth sem autenticação
-                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite acesso ao endpoint POST /usuario sem autenticação
-                        .requestMatchers("/usuario/**").authenticated() // Requer autenticação para qualquer endpoint que comece com /usuario/
-                        .anyRequest().authenticated() // Requer autenticação para todas as outras requisições
+                        .requestMatchers("/usuario/login").permitAll() // Allows access to the login endpoint without authentication
+                        .requestMatchers(HttpMethod.GET, "/auth").permitAll() // Allows access to GET /auth endpoint without authentication
+                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Allows access to POST /usuario endpoint without authentication
+                        .requestMatchers("/usuario/**").authenticated() // Requires authentication for any endpoint starting with /usuario/
+                        .anyRequest().authenticated() // Requires authentication for all other requests
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Configura a política de sessão como stateless (sem sessão)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sets session policy to stateless
                 )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT antes do filtro de autenticação padrão
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Adds the JWT filter before the default authentication filter
 
-        // Retorna a configuração do filtro de segurança construída
+        // Returns the configured security filter chain
         return http.build();
     }
 
-    // Configura o PasswordEncoder para criptografar senhas usando BCrypt
+    // Configures the PasswordEncoder to encrypt passwords using BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Retorna uma instância de BCryptPasswordEncoder
+        return new BCryptPasswordEncoder(); // Returns a BCryptPasswordEncoder instance
     }
 
-    // Configura o AuthenticationManager usando AuthenticationConfiguration
+    // Configures the AuthenticationManager using AuthenticationConfiguration
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        // Obtém e retorna o AuthenticationManager da configuração de autenticação
+        // Obtains and returns the AuthenticationManager from the authentication configuration
         return authenticationConfiguration.getAuthenticationManager();
     }
 
