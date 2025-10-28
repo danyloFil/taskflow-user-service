@@ -1,10 +1,7 @@
 package com.taskflow.user.infrastructure.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,15 +9,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "phone")
+@Builder
 public class Phone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "area_code", length = 3)
+    private Long areaCode;
+
     @Column(name = "phone_number", length = 10)
     private Long phoneNumber;
 
-    @Column(name = "area_code", length = 3)
-    private Long areaCode;
+
 }
