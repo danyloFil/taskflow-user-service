@@ -6,6 +6,7 @@ import com.taskflow.user.infrastructure.entity.User;
 import com.taskflow.user.infrastructure.exception.ConflictException;
 import com.taskflow.user.infrastructure.exception.ResourceNotFoundException;
 import com.taskflow.user.infrastructure.repository.UserRepository;
+import com.taskflow.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
 
-    public UserDTO salveUser(UserDTO userDTO){
-        emailExists(userDTO.getEmail());
+    public UserDTO createUser(UserDTO userDTO){
+        validateEmailNotExists(userDTO.getEmail());
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        User user = userConverter.toUser(userDTO);
-        return  userConverter.toUserDTO(userRepository.save(user));
+        User user = userConverter.convertToEntity(userDTO);
+        return  userConverter.convertToDTO(userRepository.save(user));
     }
 
-    public void emailExists(String email) {
+    public void validateEmailNotExists(String email) {
         try {
-            boolean exists = checkIfEmailExists(email);
+            boolean exists = isEmailRegistered(email);
             if (exists) {
                 throw new ConflictException("Email already registered: " + email);
             }
@@ -36,19 +38,35 @@ public class UserService {
         }
     }
 
-    public boolean checkIfEmailExists(String email) {
+    public boolean isEmailRegistered(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    public User findUserByEmail(String email) {
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new ResourceNotFoundException("Email not found: " + email));
     }
 
-    public void deleteUserByEmail(String email) {
+    public void removeUserByEmail(String email) {
         userRepository.deleteByEmail(email);
     }
 
+    public UserDTO updateUserProfile(String token, UserDTO userDTO) {
+        // Retrieve the user's email from the token (remove the need for email in the request)
+        String email = jwtUtil.extractTokenEmail(token.substring(7));
+
+        // Encrypt the password
+        userDTO.setPassword(userDTO.getPassword() != null ? passwordEncoder.encode(userDTO.getPassword()) : null);
+
+        // Retrieve user data from the database
+        User userEntity = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email not found"));
+
+        // Merge the data received in the DTO with the data from the database
+        User user = userConverter.updateEntityFromDTO(userDTO, userEntity);
+
+        return userConverter.convertToDTO(userRepository.save(user));
+    }
 
 
 }

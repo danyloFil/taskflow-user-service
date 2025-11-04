@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> salveUserDTO(@RequestBody UserDTO userDTO){
-        return ResponseEntity.ok(userService.salveUser(userDTO));
+        return ResponseEntity.ok(userService.createUser(userDTO));
 
     }
 
@@ -37,14 +37,19 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
-        return ResponseEntity.ok(userService.findUserByEmail(email));
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUserByEmail(@PathVariable String email) {
-        userService.deleteUserByEmail(email);
+        userService.removeUserByEmail(email);
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping
+    public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDTO,
+                                                  @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.updateUserProfile(token, userDTO));
+    }
 
 }
