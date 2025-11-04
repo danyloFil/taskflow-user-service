@@ -17,7 +17,7 @@ public class UserDTO {
     private String email;
     private String password;
     private List<AddressDTO> addressDTOS;
-    private List<PhoneDTO> phones;
+    private List<PhoneDTO> phoneDTOS;
 
 
 
