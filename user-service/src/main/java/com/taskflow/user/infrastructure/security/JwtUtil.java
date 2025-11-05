@@ -34,8 +34,8 @@ public class JwtUtil {
                 .getBody(); // Returns the body of the claims
     }
 
-    // Extracts the username from the JWT token
-    public String extractUsername(String token) {
+    // Extracts the email from the JWT token
+    public String extractTokenEmail(String token) {
         // Gets the subject (username) from the token claims
         return extractClaims(token).getSubject();
     }
@@ -49,7 +49,7 @@ public class JwtUtil {
     // Validates the JWT token by checking the username and that the token is not expired
     public boolean validateToken(String token, String username) {
         // Extracts the username from the token
-        final String extractedUsername = extractUsername(token);
+        final String extractedUsername = extractTokenEmail(token);
         // Checks if the username from the token matches the provided one and that the token is not expired
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
