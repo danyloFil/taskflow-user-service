@@ -1,10 +1,16 @@
 package com.taskflow.user.business;
 
 import com.taskflow.user.business.converter.UserConverter;
+import com.taskflow.user.business.dto.AddressDTO;
+import com.taskflow.user.business.dto.PhoneDTO;
 import com.taskflow.user.business.dto.UserDTO;
+import com.taskflow.user.infrastructure.entity.Address;
+import com.taskflow.user.infrastructure.entity.Phone;
 import com.taskflow.user.infrastructure.entity.User;
 import com.taskflow.user.infrastructure.exception.ConflictException;
 import com.taskflow.user.infrastructure.exception.ResourceNotFoundException;
+import com.taskflow.user.infrastructure.repository.AddressRepository;
+import com.taskflow.user.infrastructure.repository.PhoneRepository;
 import com.taskflow.user.infrastructure.repository.UserRepository;
 import com.taskflow.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +24,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final AddressRepository addressRepository;
+    private final PhoneRepository phoneRepository;
+
 
     public UserDTO createUser(UserDTO userDTO){
         validateEmailNotExists(userDTO.getEmail());
@@ -42,9 +51,14 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException("Email not found: " + email));
+    public UserDTO getUserByEmail(String email) {
+        try {
+            return userConverter.convertToDTO(userRepository.findByEmail(email).orElseThrow(
+                    () -> new ResourceNotFoundException("Email not found: " + email)));
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Email not found" + email);
+
+        }
     }
 
     public void removeUserByEmail(String email) {
@@ -66,6 +80,32 @@ public class UserService {
         User user = userConverter.updateEntityFromDTO(userDTO, userEntity);
 
         return userConverter.convertToDTO(userRepository.save(user));
+
+    }
+
+    public AddressDTO updateAddress(Long addressID, AddressDTO addressDTO){
+
+        Address entity = addressRepository.findById(addressID).orElseThrow(() ->
+                new ResourceNotFoundException("Id not found" + addressID));
+
+        Address address = userConverter.updateAddressFromDTO(addressDTO, entity);
+
+        return   userConverter.convertToAddressDTO(addressRepository.save(address));
+
+
+
+
+    }
+
+    public PhoneDTO updatePhoneNumber(Long phoneNumberID, PhoneDTO phoneDTO){
+
+        Phone entity = phoneRepository.findById(phoneNumberID).orElseThrow(() ->
+                new ResourceNotFoundException("Id not found" + phoneNumberID));
+
+        Phone phoneNumber = userConverter.updatePhoneNumberFromDTO(phoneDTO, entity);
+
+        return userConverter.convertToPhoneDTO(phoneRepository.save(phoneNumber));
+
     }
 
 
