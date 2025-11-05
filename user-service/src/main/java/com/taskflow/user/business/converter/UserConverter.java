@@ -79,6 +79,7 @@ public class UserConverter {
 
     public AddressDTO convertToAddressDTO(Address address){
         return AddressDTO.builder()
+                .id(address.getId())
                 .street(address.getStreet())
                 .addressLine2(address.getAddressLine2())
                 .houseNumber(address.getHouseNumber())
@@ -94,6 +95,7 @@ public class UserConverter {
 
     public PhoneDTO convertToPhoneDTO(Phone phone){
         return PhoneDTO.builder()
+                .id(phone.getId())
                 .areaCode(phone.getAreaCode())
                 .phoneNumber(phone.getPhoneNumber())
                 .build();
@@ -109,6 +111,28 @@ public class UserConverter {
                 .addresses(entity.getAddresses())
                 .phones(entity.getPhones())
                 .build();
+    }
+
+    public Address updateAddressFromDTO(AddressDTO addressDTO, Address entity){
+        return Address.builder()
+                .id(entity.getId())
+                .street(addressDTO.getStreet() != null ? addressDTO.getStreet() : entity.getStreet())
+                .addressLine2(addressDTO.getAddressLine2() != null ? addressDTO.getAddressLine2() : entity.getAddressLine2())
+                .houseNumber(addressDTO.getHouseNumber() != null ? addressDTO.getHouseNumber() : entity.getHouseNumber())
+                .city(addressDTO.getCity() != null ? addressDTO.getCity() : entity.getCity())
+                .county(addressDTO.getCounty() != null ? addressDTO.getCounty() : entity.getCounty())
+                .eirCode(addressDTO.getEirCode() != null ? addressDTO.getEirCode() : entity.getEirCode())
+                .build();
+
+    }
+
+    public Phone updatePhoneNumberFromDTO(PhoneDTO phoneDTO, Phone entity){
+        return  Phone.builder()
+                .id(entity.getId())
+                .phoneNumber(phoneDTO.getPhoneNumber() != null ? phoneDTO.getPhoneNumber() : entity.getPhoneNumber())
+                .areaCode(phoneDTO.getAreaCode() != null ? phoneDTO.getAreaCode() : entity.getAreaCode())
+                .build();
+
     }
 
 }

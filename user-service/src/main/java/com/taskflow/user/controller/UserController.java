@@ -1,8 +1,9 @@
 package com.taskflow.user.controller;
 
 import com.taskflow.user.business.UserService;
+import com.taskflow.user.business.dto.AddressDTO;
+import com.taskflow.user.business.dto.PhoneDTO;
 import com.taskflow.user.business.dto.UserDTO;
-import com.taskflow.user.infrastructure.entity.User;
 import com.taskflow.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
+    public ResponseEntity<UserDTO> getUserByEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
@@ -47,9 +48,23 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDTO,
-                                                  @RequestHeader("Authorization") String token){
+    public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UserDTO userDTO,
+                                                     @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(userService.updateUserProfile(token, userDTO));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO,
+                                                    @RequestParam("id") Long id){
+
+        return  ResponseEntity.ok(userService.updateAddress(id, addressDTO));
+    }
+
+    @PutMapping("/phoneNumber")
+    public ResponseEntity<PhoneDTO> updatePhoneNumber(@RequestBody PhoneDTO phoneDTO,
+                                                      @RequestParam("id") Long id){
+
+        return  ResponseEntity.ok(userService.updatePhoneNumber(id, phoneDTO));
     }
 
 }
