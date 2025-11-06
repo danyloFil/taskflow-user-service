@@ -87,10 +87,7 @@ public class UserService {
 
         Address entity = addressRepository.findById(addressID).orElseThrow(() ->
                 new ResourceNotFoundException("Id not found" + addressID));
-
-        Address address = userConverter.updateAddressFromDTO(addressDTO, entity);
-
-        return   userConverter.convertToAddressDTO(addressRepository.save(address));
+        return   userConverter.convertToAddressDTO(addressRepository.save(userConverter.updateAddressFromDTO(addressDTO, entity)));
 
 
 
@@ -102,11 +99,31 @@ public class UserService {
         Phone entity = phoneRepository.findById(phoneNumberID).orElseThrow(() ->
                 new ResourceNotFoundException("Id not found" + phoneNumberID));
 
-        Phone phoneNumber = userConverter.updatePhoneNumberFromDTO(phoneDTO, entity);
-
-        return userConverter.convertToPhoneDTO(phoneRepository.save(phoneNumber));
+        return userConverter.convertToPhoneDTO(phoneRepository.save(
+                userConverter.updatePhoneNumberFromDTO(phoneDTO, entity)));
 
     }
 
+    public AddressDTO createAddress(String token, AddressDTO addressDTO){
+        String email = jwtUtil.extractTokenEmail(token.substring(7));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email not Found" + email));
+
+        Address address = userConverter.convertToAddressEntity(addressDTO,user.getId());
+        return userConverter.convertToAddressDTO(
+                addressRepository.save(address));
+    }
+
+
+    public PhoneDTO createPhoneNumber(String token, PhoneDTO phoneDTO){
+        String email = jwtUtil.extractTokenEmail(token.substring(7));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email not found" + email));
+
+        Phone phone = userConverter.convertToPhoneEntity(phoneDTO, user.getId());
+        return userConverter.convertToPhoneDTO(
+                phoneRepository.save(phone));
+
+    }
 
 }
