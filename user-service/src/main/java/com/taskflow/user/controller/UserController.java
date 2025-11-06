@@ -1,8 +1,9 @@
 package com.taskflow.user.controller;
 
 import com.taskflow.user.business.UserService;
+import com.taskflow.user.business.dto.AddressDTO;
+import com.taskflow.user.business.dto.PhoneDTO;
 import com.taskflow.user.business.dto.UserDTO;
-import com.taskflow.user.infrastructure.entity.User;
 import com.taskflow.user.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> salveUserDTO(@RequestBody UserDTO userDTO){
-        return ResponseEntity.ok(userService.salveUser(userDTO));
+        return ResponseEntity.ok(userService.createUser(userDTO));
 
     }
 
@@ -36,15 +37,48 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
-        return ResponseEntity.ok(userService.findUserByEmail(email));
+    public ResponseEntity<UserDTO> getUserByEmail(@RequestParam("email") String email) {
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUserByEmail(@PathVariable String email) {
-        userService.deleteUserByEmail(email);
+        userService.removeUserByEmail(email);
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping
+    public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UserDTO userDTO,
+                                                     @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.updateUserProfile(token, userDTO));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO,
+                                                    @RequestParam("id") Long id){
+
+        return  ResponseEntity.ok(userService.updateAddress(id, addressDTO));
+    }
+
+    @PutMapping("/phoneNumber")
+    public ResponseEntity<PhoneDTO> updatePhoneNumber(@RequestBody PhoneDTO phoneDTO,
+                                                      @RequestParam("id") Long id){
+
+        return  ResponseEntity.ok(userService.updatePhoneNumber(id, phoneDTO));
+    }
+
+    @PostMapping("/createAddress")
+    public ResponseEntity<AddressDTO> createAddress(@RequestBody AddressDTO addressDTO,
+                                                    @RequestHeader("Authorization") String token){
+           return ResponseEntity.ok(userService.createAddress(token, addressDTO));
+
+    }
+
+    @PostMapping("createPhoneNumber")
+    public ResponseEntity<PhoneDTO> createPhoneNumber(@RequestBody PhoneDTO phoneDTO,
+                                                      @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.createPhoneNumber(token, phoneDTO));
+        
+    }
 
 }

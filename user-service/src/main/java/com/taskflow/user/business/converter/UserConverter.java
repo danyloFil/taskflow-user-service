@@ -13,19 +13,19 @@ import java.util.List;
 @Component
 public class UserConverter {
 
-    public User toUser(UserDTO userDTO){
+    public User convertToEntity(UserDTO userDTO){
         return User.builder()
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
-                .addresses(toListAddress(userDTO.getAddressDTOS()))
-                .phones(toPhoneList(userDTO.getPhoneDTOS()))
+                .addresses(convertToAddressList(userDTO.getAddressDTOS()))
+                .phones(convertToPhoneList(userDTO.getPhoneDTOS()))
                 .build();
     }
 
-    public List<Address> toListAddress(List<AddressDTO> addressDTOS){
-        return  addressDTOS.stream().map(this::toAddress).toList();
+    public List<Address> convertToAddressList(List<AddressDTO> addressDTOS){
+        return  addressDTOS.stream().map(this::convertToAddress).toList();
     }
 
    /*
@@ -39,7 +39,7 @@ public class UserConverter {
         }
     */
 
-    public Address toAddress(AddressDTO addressDTO){
+    public Address convertToAddress(AddressDTO addressDTO){
         return Address.builder()
                 .street(addressDTO.getStreet())
                 .addressLine2(addressDTO.getAddressLine2())
@@ -50,7 +50,7 @@ public class UserConverter {
                 .build();
     }
 
-    public List<Phone> toPhoneList(List<PhoneDTO> phoneDTOS){
+    public List<Phone> convertToPhoneList(List<PhoneDTO> phoneDTOS){
         return  phoneDTOS.stream().map(this::toPhone).toList();
     }
 
@@ -61,24 +61,25 @@ public class UserConverter {
                 .build();
     }
 
-    public UserDTO toUserDTO(User user){
+    public UserDTO convertToDTO(User user){
         return UserDTO.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .addressDTOS(toListAddressDTO(user.getAddresses()))
-                .phoneDTOS(toPhoneListDTO(user.getPhones()))
+                .addressDTOS(convertAddressDTOList(user.getAddresses()))
+                .phoneDTOS(convertToPhoneDTOList(user.getPhones()))
                 .build();
     }
 
-    public List<AddressDTO> toListAddressDTO(List<Address> addressList){
-        return  addressList.stream().map(this::toAddressDTO).toList();
+    public List<AddressDTO> convertAddressDTOList(List<Address> addressList){
+        return  addressList.stream().map(this::convertToAddressDTO).toList();
     }
 
 
-    public AddressDTO toAddressDTO(Address address){
+    public AddressDTO convertToAddressDTO(Address address){
         return AddressDTO.builder()
+                .id(address.getId())
                 .street(address.getStreet())
                 .addressLine2(address.getAddressLine2())
                 .houseNumber(address.getHouseNumber())
@@ -88,15 +89,72 @@ public class UserConverter {
                 .build();
     }
 
-    public List<PhoneDTO> toPhoneListDTO(List<Phone> phoneList){
-        return  phoneList.stream().map(this::toPhoneDTO).toList();
+    public List<PhoneDTO> convertToPhoneDTOList(List<Phone> phoneList){
+        return  phoneList.stream().map(this::convertToPhoneDTO).toList();
     }
 
-    public PhoneDTO toPhoneDTO(Phone phone){
+    public PhoneDTO convertToPhoneDTO(Phone phone){
         return PhoneDTO.builder()
+                .id(phone.getId())
                 .areaCode(phone.getAreaCode())
                 .phoneNumber(phone.getPhoneNumber())
                 .build();
+    }
+
+    public User updateEntityFromDTO(UserDTO userDTO, User entity){
+        return User.builder()
+                .firstName(userDTO.getFirstName() != null ? userDTO.getFirstName() : entity.getFirstName())
+                .lastName(userDTO.getLastName() != null ? userDTO.getLastName() : entity.getLastName())
+                .id(entity.getId())
+                .password(userDTO.getPassword() != null ? userDTO.getPassword() : entity.getPassword())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : entity.getEmail())
+                .addresses(entity.getAddresses())
+                .phones(entity.getPhones())
+                .build();
+    }
+
+    public Address updateAddressFromDTO(AddressDTO addressDTO, Address entity){
+        return Address.builder()
+                .id(entity.getId())
+                .street(addressDTO.getStreet() != null ? addressDTO.getStreet() : entity.getStreet())
+                .addressLine2(addressDTO.getAddressLine2() != null ? addressDTO.getAddressLine2() : entity.getAddressLine2())
+                .houseNumber(addressDTO.getHouseNumber() != null ? addressDTO.getHouseNumber() : entity.getHouseNumber())
+                .city(addressDTO.getCity() != null ? addressDTO.getCity() : entity.getCity())
+                .county(addressDTO.getCounty() != null ? addressDTO.getCounty() : entity.getCounty())
+                .eirCode(addressDTO.getEirCode() != null ? addressDTO.getEirCode() : entity.getEirCode())
+                .build();
+
+    }
+
+    public Phone updatePhoneNumberFromDTO(PhoneDTO phoneDTO, Phone entity){
+        return  Phone.builder()
+                .id(entity.getId())
+                .phoneNumber(phoneDTO.getPhoneNumber() != null ? phoneDTO.getPhoneNumber() : entity.getPhoneNumber())
+                .areaCode(phoneDTO.getAreaCode() != null ? phoneDTO.getAreaCode() : entity.getAreaCode())
+                .build();
+
+    }
+
+    public Address convertToAddressEntity(AddressDTO addressDTO, Long UserId){
+        return Address.builder()
+                .street(addressDTO.getStreet())
+                .addressLine2(addressDTO.getAddressLine2())
+                .houseNumber(addressDTO.getHouseNumber())
+                .city(addressDTO.getCity())
+                .county(addressDTO.getCounty())
+                .eirCode(addressDTO.getEirCode())
+                .userID(UserId)
+                .build();
+
+    }
+
+    public Phone convertToPhoneEntity(PhoneDTO phoneDTO, Long UserId){
+        return Phone.builder()
+                .phoneNumber(phoneDTO.getPhoneNumber())
+                .areaCode(phoneDTO.getAreaCode())
+                .userID(UserId)
+                .build();
+
     }
 
 }
