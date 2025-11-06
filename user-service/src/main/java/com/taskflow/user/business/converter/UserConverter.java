@@ -135,4 +135,26 @@ public class UserConverter {
 
     }
 
+    public Address convertToAddressEntity(AddressDTO addressDTO, Long UserId){
+        return Address.builder()
+                .street(addressDTO.getStreet())
+                .addressLine2(addressDTO.getAddressLine2())
+                .houseNumber(addressDTO.getHouseNumber())
+                .city(addressDTO.getCity())
+                .county(addressDTO.getCounty())
+                .eirCode(addressDTO.getEirCode())
+                .userID(UserId)
+                .build();
+
+    }
+
+    public Phone convertToPhoneEntity(PhoneDTO phoneDTO, Long UserId){
+        return Phone.builder()
+                .phoneNumber(phoneDTO.getPhoneNumber())
+                .areaCode(phoneDTO.getAreaCode())
+                .userID(UserId)
+                .build();
+
+    }
+
 }

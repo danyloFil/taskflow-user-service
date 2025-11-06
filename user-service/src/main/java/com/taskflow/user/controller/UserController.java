@@ -67,4 +67,18 @@ public class UserController {
         return  ResponseEntity.ok(userService.updatePhoneNumber(id, phoneDTO));
     }
 
+    @PostMapping("/createAddress")
+    public ResponseEntity<AddressDTO> createAddress(@RequestBody AddressDTO addressDTO,
+                                                    @RequestHeader("Authorization") String token){
+           return ResponseEntity.ok(userService.createAddress(token, addressDTO));
+
+    }
+
+    @PostMapping("createPhoneNumber")
+    public ResponseEntity<PhoneDTO> createPhoneNumber(@RequestBody PhoneDTO phoneDTO,
+                                                      @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(userService.createPhoneNumber(token, phoneDTO));
+        
+    }
+
 }

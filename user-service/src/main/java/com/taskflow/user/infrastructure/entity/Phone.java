@@ -22,5 +22,8 @@ public class Phone {
     @Column(name = "phone_number", length = 10)
     private Long phoneNumber;
 
+    @Column(name = "user_id")
+    private Long userID;
+
 
 }
