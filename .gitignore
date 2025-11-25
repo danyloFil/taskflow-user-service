@@ -1,0 +1,58 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+ /dist/
+ /nbdist/
+ /nb-gradle/PS C:\Users\Dfilgueira\OneDrive - Shannonvale Foods\Desktop\WorkSpace\user-service> git commit -m "Remove .idea folder from version control"
+            [feature/address_phoneNumber_registration 0b32d3c] Remove .idea folder from version control
+             9 files changed, 85 deletions(-)
+             delete mode 100644 .idea/.gitignore
+             delete mode 100644 .idea/compiler.xml
+             delete mode 100644 .idea/copilot.data.migration.agent.xml
+             delete mode 100644 .idea/gradle.xml
+             delete mode 100644 .idea/misc.xml
+             delete mode 100644 .idea/modules.xml
+             delete mode 100644 .idea/modules/user-service.main.iml
+             delete mode 100644 .idea/user-service.iml
+             delete mode 100644 .idea/vcs.xml
+            PS C:\Users\Dfilgueira\OneDrive - Shannonvale Foods\Desktop\WorkSpace\user-service> git push
+            fatal: The current branch feature/address_phoneNumber_registration has no upstream branch.
+            To push the current branch and set the remote as upstream, use
+
+                git push --set-upstream origin feature/address_phoneNumber_registration
+
+            To have this happen automatically for branches without a tracking
+            upstream, see 'push.autoSetupRemote' in 'git help config'.
+
+            PS C:\Users\Dfilgueira\OneDrive - Shannonvale Foods\Desktop\WorkSpace\user-service>
+
+### VS Code ###
+.vscode/
